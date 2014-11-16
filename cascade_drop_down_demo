@@ -1,0 +1,174 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>jQuery Cascading Dropdown Plugin Examples</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width">
+
+        <!-- Stylesheets here -->
+        <link rel="stylesheet" type="text/css" href="http://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.3.0/css/bootstrap.min.css" />
+        <style type="text/css">
+        	.bs-docs-example {
+        		position: relative;
+				margin: 15px 0;
+				padding: 5px 19px 14px;
+				background-color: #fff;
+				border: 1px solid #ddd;
+				-webkit-border-radius: 4px;
+				-moz-border-radius: 4px;
+				border-radius: 4px;
+        	}
+        	
+        	.cascading-dropdown-loading {
+        		cursor: wait;
+        		background: url('http://www.dnasir.com/github/jquery-cascading-dropdown/ajax-loader.gif') 85% center no-repeat transparent;
+        	}
+        </style>
+        <link rel="stylesheet" type="text/css" href="http://cdnjs.cloudflare.com/ajax/libs/SyntaxHighlighter/3.0.83/styles/shCore.css">
+        <link rel="stylesheet" type="text/css" href="http://cdnjs.cloudflare.com/ajax/libs/SyntaxHighlighter/3.0.83/styles/shThemeDefault.css">
+	</head>
+	<body>
+		<div class="container">
+
+
+		
+			<div id="example3">
+				<!-- <h4>Program finder</h4>  -->
+				<br/>
+				<br/>
+				<div>
+					Faculty: &nbsp &nbsp
+					<select class="step1" name="faculty">
+						<option value="IT">IT</option>
+						<option value="Law" selected="selected">Law</option>
+						<option value="BZ">BZ</option>
+					</select>
+				</div>
+				<div>
+					Teaching </br> School: &nbsp &nbsp
+				<select class="step2" name="school">
+					<option value="">All</option>
+				</select>
+				</div>
+				<div>
+					Academic </br> Year: &nbsp &nbsp
+					<select class="step3" name="year">
+						<option value="2014">Current Year</option>
+					</select>
+				</div>
+				<div class="bs-docs-example">
+					<h4> <img src="http://www.dnasir.com/github/jquery-cascading-dropdown/ajax-loader.gif" data-bind="visible: loading" /></h4>
+					<ul data-bind="foreach: programs, visible: programs().length > 0">
+						<li>
+							<span data-bind="text: Program"></span>
+							<span>
+								<select>
+									<option value="ALL">ALL</option>
+								</select> 
+							</span>
+						</li>
+					</ul>
+					<p data-bind="visible: programs().length == 0">No matches</p>
+				</div>
+			</div>
+
+			<br />
+
+		</div>
+
+		<!-- Scripts here -->
+		
+	
+		<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
+		<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/knockout/2.3.0/knockout-min.js"></script>
+		<script type="text/javascript" src="http://www.dnasir.com/github/jquery-cascading-dropdown/jquery.mockjax.js"></script>
+		<script type="text/javascript" src="ajax-mocks2.js"></script>
+		<script type="text/javascript" src="http://www.dnasir.com/github/jquery-cascading-dropdown/jquery.cascadingdropdown.js"></script>
+		<script type="text/javascript">
+			function viewmodel() {
+				this.programs = ko.observableArray([]);
+				this.loading = ko.observable(false);
+			}
+
+			var 
+				example3 = new viewmodel();
+
+			ko.applyBindings(example3, document.getElementById('example3'));
+
+		
+			
+			// Example 3
+			$('#example3').cascadingDropdown({
+				selectBoxes: [
+					{
+						selector: '.step1'
+						/*
+						source: function(request, response) {
+						$.getJSON('/api/faculties', request, function(data) {
+									response($.map(data, function(item, index) {
+										return {
+											label: item,
+											value: item,
+											selected: index == 0
+									};
+								}));
+							});
+						}
+						*/
+					},
+					{
+						selector: '.step2',
+						requires: ['.step1'],
+						source: function(request, response) {
+							$.getJSON('/api/schools', request, function(data) {
+								response($.map(data, function(item, index) {
+									return {
+										label: item,
+										value: item,
+										selected: index == 0
+									};
+								}));
+							});
+						}
+					},
+					{
+						selector: '.step3',
+						source: function(request, response) {
+							$.getJSON('/api/years', request, function(data) {
+								response($.map(data, function(item, index) {
+									return {
+										label: item,
+										value: item,
+										selected: index == 0
+									};
+								}));
+							});
+						}
+					}
+				],
+				onChange: function(event, dropdownData) {
+					example3.loading(true);
+					$.getJSON('/api/programs', dropdownData, function(data) {
+						example3.programs(data);
+						example3.loading(false);
+					});
+				},
+				onReady: function(event, dropdownData) {
+					example3.loading(true);
+					$.getJSON('/api/programs', dropdownData, function(data) {
+						example3.programs(data);
+						example3.loading(false);
+					});
+				}
+			});
+		</script>
+		<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/SyntaxHighlighter/3.0.83/scripts/shCore.js"></script>
+		<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/SyntaxHighlighter/3.0.83/scripts/shBrushJScript.js"></script>
+		<script type="text/javascript">
+			SyntaxHighlighter.all();
+		</script>
+	</body>
+</html>
